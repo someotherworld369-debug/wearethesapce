@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Art Grid Designer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container">
+    <h1>Art Grid Designer</h1>
+
+    <section class="controls">
+      <label for="sizeSelect">Choose grid size:</label>
+      <select id="sizeSelect" aria-label="Grid size">
+        <option value="3">3 x 3</option>
+        <option value="6" selected>6 x 6</option>
+        <option value="9">9 x 9</option>
+      </select>
+
+      <div class="palette-area">
+        <p>Color palette:</p>
+        <div id="palette" class="palette"></div>
+        <div class="color-picker-row">
+          <input type="color" id="colorWheel" title="Pick a custom color" />
+          <button id="addColorBtn">Add color</button>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button id="clearGridBtn">Clear Grid</button>
+        <button id="submitBtn" class="primary">Submit</button>
+        <a id="viewGalleryLink" href="gallery.html" class="link-button">View Gallery</a>
+      </div>
+    </section>
+
+    <section class="grid-wrap">
+      <div id="grid" class="grid"></div>
+    </section>
+
+    <footer>
+      <small>Submissions are stored locally in your browser (localStorage).</small>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
