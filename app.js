@@ -1,6 +1,6 @@
 // Frontend app.js (client) - posts submissions to backend API if available
-// Replace API_BASE with your deployed backend URL (no trailing slash), e.g. 'https://wearethesapace-api.onrender.com'
-const API_BASE = ''; // <-- set this to your backend URL after deployment, e.g. 'https://wearethesapace-api.onrender.com'
+// Replace API_BASE with your deployed backend URL (no trailing slash), e.g. 'https://wearethespace-backend.onrender.com'
+const API_BASE = 'https://wearethespace-backend.onrender.com'; // <-- set this to your backend URL after deployment, e.g. 'https://wearethespace-backend.onrender.com'
 
 const DEFAULT_PALETTE = [
   '#000000', '#ffffff', '#ff3b30', '#ff9500', '#ffd60a',
