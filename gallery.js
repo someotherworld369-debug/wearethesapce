@@ -1,6 +1,6 @@
 <script>
   // adjust API_BASE to your backend URL
-  const API_BASE = 'https://YOUR_BACKEND_URL'; // <-- replace
+  const API_BASE = 'https://wearethespace-backend.onrender.com'; // <-- replace
   const apiUrl = (API_BASE && API_BASE !== '') ? (API_BASE.replace(/\/$/, '') + '/api/submissions') : '/api/submissions';
 
   const galleryArea = document.getElementById('galleryArea');
