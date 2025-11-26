@@ -1,6 +1,5 @@
-// Frontend app.js (client) - posts submissions to backend API if available
-// Replace API_BASE with your deployed backend URL (no trailing slash), e.g. 'https://wearethespace-backend.onrender.com'
-const API_BASE = 'https://wearethespace-backend.onrender.com'; // <-- set this to your backend URL after deployment, e.g. 'https://wearethespace-backend.onrender.com'
+// Frontend app.js (client) - posts submissions to backend API
+const API_BASE = 'https://wearethespace-backend.onrender.com'; // <-- set this to your deployed backend URL
 
 const DEFAULT_PALETTE = [
   '#000000', '#ffffff', '#ff3b30', '#ff9500', '#ffd60a',
@@ -107,12 +106,10 @@ function onClearGrid() {
 }
 
 async function onSubmit() {
-  const submission = {
-    size: currentSize,
-    cells: cells.slice()
-  };
-
+  const submission = { size: currentSize, cells: cells.slice() };
   const apiUrl = (API_BASE && API_BASE !== '') ? (API_BASE.replace(/\/$/, '') + '/api/submissions') : '/api/submissions';
+
+  console.log('Submitting to backend:', apiUrl, submission);
 
   try {
     const res = await fetch(apiUrl, {
@@ -120,16 +117,22 @@ async function onSubmit() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(submission)
     });
+
+    console.log('Response status:', res.status);
+    console.log('Response headers:', [...res.headers.entries()]);
+
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      console.warn('API write failed, falling back to localStorage:', err);
+      const err = await res.json().catch(() => ({ message: 'No JSON returned' }));
+      console.error('API write failed:', err);
       throw new Error('API write failed');
     }
-    // success — go to gallery page
+
+    const result = await res.json().catch(() => ({}));
+    console.log('Submission successful:', result);
+
     window.location.href = 'gallery.html';
-    return;
+
   } catch (err) {
-    // fallback: localStorage
     console.warn('Submit falling back to localStorage:', err);
     const key = 'artGridSubmissions';
     const existing = JSON.parse(localStorage.getItem(key) || '[]');
