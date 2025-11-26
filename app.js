@@ -130,7 +130,7 @@ async function onSubmit() {
     const result = await res.json().catch(() => ({}));
     console.log('Submission successful:', result);
 
-    window.location.href = 'gallery.html';
+    window.location.href = 'https://someotherworld369-debug.github.io/wearethespace/gallery.html';
 
   } catch (err) {
     console.warn('Submit falling back to localStorage:', err);
@@ -138,7 +138,7 @@ async function onSubmit() {
     const existing = JSON.parse(localStorage.getItem(key) || '[]');
     existing.push({ id: Date.now(), size: submission.size, cells: submission.cells, timestamp: new Date().toISOString() });
     localStorage.setItem(key, JSON.stringify(existing));
-    window.location.href = 'gallery.html';
+    window.location.href = 'https://someotherworld369-debug.github.io/wearethespace/gallery.html';
   }
 }
 
