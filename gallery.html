@@ -1,159 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WeAreTheSpace Gallery</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      background: #f0f0f0;
-      font-family: sans-serif;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WeAreTheSpace Gallery</title>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f0f0f0;
+  font-family: sans-serif;
+}
 
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      transform-origin: top center;
-      transition: transform 0.3s ease;
-      width: 100%;
-      max-width: 100%;
-      height: 100%;
-    }
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
 
-    a.back-arrow {
-      display: inline-block;
-      font-size: 40px;
-      text-decoration: none;
-      color: #333;
-      margin-bottom: 10px;
-    }
+a.back-arrow {
+  font-size: 40px;
+  text-decoration: none;
+  color: #333;
+  margin-bottom: 10px;
+}
 
-    #galleryArea {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+#galleryArea {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-    .gallery-grid {
-      display: grid;
-      gap: 5px; /* optional space between tiles */
-      justify-content: center;
-      align-content: center;
-    }
+.gallery-grid {
+  display: grid;
+  gap: 0;
+}
 
-    .design-tile {
-      display: grid;
-      gap: 1px; /* optional space between cells */
-    }
+.design-tile {
+  display: grid;
+  gap: 0;
+  aspect-ratio: 1 / 1; /* ensure square tile */
+}
 
-    .design-tile div {
-      aspect-ratio: 1 / 1; /* force square cells */
-      width: 100%;
-      height: 100%;
-    }
-
-    .small-note {
-      text-align: center;
-      color: #888;
-      font-size: 0.9rem;
-      margin-top: 20px;
-    }
-  </style>
+.design-tile .cell {
+  width: 100%;
+  aspect-ratio: 1 / 1; /* ensures each cell is square */
+}
+</style>
 </head>
 <body>
-  <main class="container">
-    <a href="https://someotherworld369-debug.github.io/wearethespace/" class="back-arrow">←</a>
-    <div id="galleryArea"></div>
-  </main>
+<main class="container">
+  <a href="https://someotherworld369-debug.github.io/wearethespace/" class="back-arrow">←</a>
+  <div id="galleryArea"></div>
+</main>
 
-  <script>
-    const API_BASE = 'https://wearethespace-backend.onrender.com';
-    const apiUrl = API_BASE ? (API_BASE.replace(/\/$/, '') + '/api/submissions') : '/api/submissions';
+<script>
+const API_BASE = 'https://wearethespace-backend.onrender.com';
+const apiUrl = API_BASE ? (API_BASE.replace(/\/$/, '') + '/api/submissions') : '/api/submissions';
 
-    const galleryArea = document.getElementById('galleryArea');
+const galleryArea = document.getElementById('galleryArea');
 
-    async function fetchFromApi() {
-      try {
-        const res = await fetch(apiUrl);
-        if (!res.ok) throw new Error('API GET failed');
-        const subs = await res.json();
-        return subs.map(s => ({
-          id: s.id,
-          size: s.size,
-          cells: s.cells
-        }));
-      } catch (err) {
-        console.warn('Failed to fetch from API, falling back to localStorage:', err);
-        const fallback = JSON.parse(localStorage.getItem('artGridSubmissions') || '[]');
-        return fallback;
-      }
-    }
+async function fetchFromApi() {
+  try {
+    const res = await fetch(apiUrl);
+    if (!res.ok) throw new Error('API GET failed');
+    const subs = await res.json();
+    return subs.map(s => ({ id: s.id, size: s.size, cells: s.cells }));
+  } catch {
+    const fallback = JSON.parse(localStorage.getItem('artGridSubmissions') || '[]');
+    return fallback;
+  }
+}
 
-    function makeDesignTile(sub) {
-      const outer = document.createElement('div');
-      outer.className = 'design-tile';
-      outer.style.gridTemplateColumns = `repeat(${sub.size}, 1fr)`;
-      outer.style.gridTemplateRows = `repeat(${sub.size}, 1fr)`;
+function makeDesignTile(sub) {
+  const tile = document.createElement('div');
+  tile.className = 'design-tile';
+  tile.style.gridTemplateColumns = `repeat(${sub.size}, 1fr)`;
+  tile.style.gridTemplateRows = `repeat(${sub.size}, 1fr)`;
 
-      sub.cells.forEach(cellColor => {
-        const c = document.createElement('div');
-        c.style.background = cellColor || '#ffffff';
-        outer.appendChild(c);
-      });
+  sub.cells.forEach(color => {
+    const c = document.createElement('div');
+    c.className = 'cell';
+    c.style.background = color || '#ffffff';
+    tile.appendChild(c);
+  });
 
-      return outer;
-    }
+  return tile;
+}
 
-    function renderSubs(subs) {
-      galleryArea.innerHTML = '';
+function renderSubs(subs) {
+  galleryArea.innerHTML = '';
 
-      if (subs.length === 0) {
-        galleryArea.innerHTML = '<p class="small-note">No submissions yet.</p>';
-        return;
-      }
+  if (!subs.length) {
+    galleryArea.innerHTML = '<p class="small-note">No submissions yet.</p>';
+    return;
+  }
 
-      const totalSubs = subs.length;
-      const gridDim = Math.ceil(Math.sqrt(totalSubs));
+  const totalSubs = subs.length;
+  const dim = Math.ceil(Math.sqrt(totalSubs)); // square layout for submissions
 
-      const container = document.createElement('div');
-      container.className = 'gallery-grid';
-      container.style.gridTemplateColumns = `repeat(${gridDim}, auto)`;
-      container.style.gridTemplateRows = `repeat(${gridDim}, auto)`;
+  const container = document.createElement('div');
+  container.className = 'gallery-grid';
+  container.style.gridTemplateColumns = `repeat(${dim}, 1fr)`;
+  container.style.gridTemplateRows = `repeat(${dim}, 1fr)`;
 
-      subs.forEach(sub => {
-        const tile = makeDesignTile(sub);
-        container.appendChild(tile);
-      });
+  subs.forEach(sub => {
+    const tile = makeDesignTile(sub);
+    container.appendChild(tile);
+  });
 
-      galleryArea.appendChild(container);
+  galleryArea.appendChild(container);
 
-      // Calculate max possible scale to fit all tiles on screen
-      const containerRect = container.getBoundingClientRect();
-      const scaleX = window.innerWidth / containerRect.width;
-      const scaleY = window.innerHeight / containerRect.height;
-      const scale = Math.min(scaleX, scaleY, 1);
-      document.querySelector('.container').style.transform = `scale(${scale})`;
-    }
+  // Dynamically shrink submission tiles to fit viewport
+  const availableWidth = galleryArea.clientWidth;
+  const availableHeight = galleryArea.clientHeight;
+  const tileSize = Math.floor(Math.min(availableWidth, availableHeight) / dim);
 
-    async function loadAndRender() {
-      const subs = await fetchFromApi();
-      renderSubs(subs);
-    }
+  container.childNodes.forEach(tile => {
+    tile.style.width = `${tileSize}px`;
+    tile.style.height = `${tileSize}px`;
+  });
+}
 
-    window.addEventListener('resize', loadAndRender);
-    loadAndRender();
-  </script>
+async function loadAndRender() {
+  const subs = await fetchFromApi();
+  renderSubs(subs);
+  setTimeout(loadAndRender, 2000); // auto-refresh every 2s
+}
+
+window.addEventListener('resize', loadAndRender);
+loadAndRender();
+</script>
 </body>
 </html>
