@@ -128,29 +128,6 @@
       return outer;
     }
 
-    clearAllBtn.addEventListener('click', async () => {
-      if (!confirm('Clear all submissions? This cannot be undone.')) return;
-      const adminKey = prompt('Enter admin key to confirm deletion (cancel to skip):');
-      if (!adminKey) return;
-
-      try {
-        const res = await fetch(apiUrl, {
-          method: 'DELETE',
-          headers: { 'x-admin-api-key': adminKey }
-        });
-        console.log('DELETE response status:', res.status);
-        if (!res.ok) {
-          const txt = await res.json().catch(() => ({}));
-          alert('Delete failed: ' + (txt.error || res.statusText));
-          return;
-        }
-        console.log('DELETE successful');
-        loadAndRender();
-      } catch (err) {
-        console.warn('Delete failed', err);
-        alert('Delete failed (network/error).');
-      }
-    });
 
     async function loadAndRender() {
       const subs = await fetchFromApi();
