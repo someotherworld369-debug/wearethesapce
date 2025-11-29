@@ -23,7 +23,6 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  transform-origin: top center;
   width: 100%;
   height: 100%;
 }
@@ -51,7 +50,6 @@ a.back-arrow {
 .submission-tile {
   display: grid;
   gap: 0;
-  aspect-ratio: 1 / 1; /* square submissions */
 }
 
 .submission-tile div {
@@ -89,18 +87,18 @@ async function fetchFromApi() {
 }
 
 function makeDesignTile(sub) {
-  const outer = document.createElement('div');
-  outer.className = 'submission-tile';
-  outer.style.gridTemplateColumns = `repeat(${sub.size}, 1fr)`;
-  outer.style.gridTemplateRows = `repeat(${sub.size}, 1fr)`;
+  const tile = document.createElement('div');
+  tile.className = 'submission-tile';
+  tile.style.gridTemplateColumns = `repeat(${sub.size}, 1fr)`;
+  tile.style.gridTemplateRows = `repeat(${sub.size}, 1fr)`;
 
   sub.cells.forEach(color => {
     const c = document.createElement('div');
     c.style.background = color || '#ffffff';
-    outer.appendChild(c);
+    tile.appendChild(c);
   });
 
-  return outer;
+  return tile;
 }
 
 function renderSubs(subs) {
@@ -112,8 +110,7 @@ function renderSubs(subs) {
   }
 
   const totalSubs = subs.length;
-  const dim = Math.ceil(Math.sqrt(totalSubs)); // square grid of submissions
-
+  const dim = Math.ceil(Math.sqrt(totalSubs)); // square layout
   const container = document.createElement('div');
   container.className = 'gallery-grid';
   container.style.gridTemplateColumns = `repeat(${dim}, 1fr)`;
@@ -128,10 +125,10 @@ function renderSubs(subs) {
 
   galleryArea.appendChild(container);
 
-  // Calculate maximum size for each submission tile
+  // Calculate tile size so all fit in viewport
   const containerWidth = galleryArea.clientWidth;
   const containerHeight = galleryArea.clientHeight;
-  const tileSize = Math.min(containerWidth, containerHeight) / dim;
+  const tileSize = Math.floor(Math.min(containerWidth, containerHeight) / dim);
 
   container.childNodes.forEach(tile => {
     tile.style.width = `${tileSize}px`;
@@ -142,9 +139,7 @@ function renderSubs(subs) {
 async function loadAndRender() {
   const subs = await fetchFromApi();
   renderSubs(subs);
-
-  // Poll for new submissions
-  setTimeout(loadAndRender, 2000);
+  setTimeout(loadAndRender, 2000); // refresh every 2s
 }
 
 window.addEventListener('resize', loadAndRender);
